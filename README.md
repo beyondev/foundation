@@ -1,0 +1,2 @@
+# foundation
+golang foundation library
