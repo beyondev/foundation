@@ -1,8 +1,8 @@
 package list
 
 import (
-	"github.com/eosspark/eos-go/common/container/allocator"
-	"github.com/eosspark/eos-go/common/container/offsetptr"
+	"foundation/allocator"
+	"foundation/offsetptr"
 	"unsafe"
 )
 
@@ -108,7 +108,7 @@ func (l *List) insert(e, at *Node) *Node {
 	(*Node)(n.Get()).prev.Set(unsafe.Pointer(e))
 	e.list.Set(unsafe.Pointer(l))
 
-	l.len ++
+	l.len++
 	return e
 }
 
@@ -144,7 +144,7 @@ func (l *List) remove(n *Node) {
 	n.next.Set(nil)
 	n.prev.Set(nil)
 	n.list.Set(nil)
-	l.len --
+	l.len--
 }
 
 func (l *List) Remove(n *Node) {

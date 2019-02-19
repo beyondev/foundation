@@ -1,11 +1,13 @@
+//+build shared
+
 package ordered_index
 
 import (
 	"fmt"
-	"github.com/eosspark/eos-go/common/container"
-	"github.com/eosspark/eos-go/common/container/allocator"
-	"github.com/eosspark/eos-go/common/container/multiindex"
-	. "github.com/eosspark/eos-go/common/container/offsetptr"
+	"foundation/allocator"
+	"foundation/container"
+	"foundation/multiindex"
+	. "foundation/offsetptr"
 	"unsafe"
 )
 
@@ -29,13 +31,18 @@ type OrderedIndex struct {
 }
 
 func (tree *OrderedIndex) init(final *FinalIndex) {
-	tree.Root = *NewNil()
+	tree.Root.Set(nil)
+	tree.size = 0
 	tree.final.Set(unsafe.Pointer(final))
 	//tree.final = final
 	tree.super.Set(unsafe.Pointer(NewSuperIndex()))
 	//tree.super = NewSuperIndex()
 	(*SuperIndex)(tree.super.Get()).init(final)
 	//tree.super.init(final)
+}
+
+func (tree *OrderedIndex) free() {
+	(*SuperIndex)(tree.super.Get()).free()
 }
 
 func (tree *OrderedIndex) clear() {
@@ -46,6 +53,7 @@ func (tree *OrderedIndex) clear() {
 /*generic class*/
 type SuperIndex struct {
 	init    func(*FinalIndex)
+	free    func()
 	clear   func()
 	insert  func(Value, *FinalNode) (*SuperNode, bool)
 	erase   func(*SuperNode) bool
@@ -86,19 +94,14 @@ type np_ = *OrderedIndexNode
 const _SizeofOrderedIndexNode = unsafe.Sizeof(OrderedIndexNode{})
 
 func NewOrderedIndexNode(key Key, color color) (n *OrderedIndexNode) {
-	if Allocator == nil {
-		n = new(OrderedIndexNode)
-	} else {
-		n = np_(Allocator.Allocate(_SizeofOrderedIndexNode))
-	}
-
+	n = np_(Allocator.Allocate(_SizeofOrderedIndexNode))
 	n.Key = key
 	n.color = color
-	n.super = *NewNil()
-	n.final = *NewNil()
-	n.Left = *NewNil()
-	n.Right = *NewNil()
-	n.Parent = *NewNil()
+	n.super.Set(nil)
+	n.final.Set(nil)
+	n.Left.Set(nil)
+	n.Right.Set(nil)
+	n.Parent.Set(nil)
 
 	return n
 }
@@ -115,7 +118,7 @@ type FinalNode struct {
 }
 
 func (node *OrderedIndexNode) free() {
-	if Allocator != nil {
+	if node != nil {
 		Allocator.DeAllocate(unsafe.Pointer(node))
 	}
 	// else free by golang gc
@@ -180,9 +183,8 @@ func (tree *OrderedIndex) erase(n *OrderedIndexNode) {
 	tree.remove(n)
 	(*SuperIndex)(tree.super.Get()).erase((*SuperNode)(n.super.Get()))
 	//tree.super.erase(n.super)
-	n.super.Set(nil)
+	n.free()
 	//n.super = nil
-	n.final.Set(nil)
 	//n.final = nil
 }
 
@@ -218,6 +220,8 @@ func (tree *OrderedIndex) modify(n *OrderedIndexNode) (*OrderedIndexNode, bool) 
 
 		node.super.Forward(&n.super)
 		node.final.Forward(&n.final)
+
+		n.free()
 		n = node
 	}
 
@@ -451,12 +455,14 @@ func (tree *OrderedIndex) swapNode(node *OrderedIndexNode, pred *OrderedIndexNod
 	node.color = tmp.color
 
 	pred.Right.Forward(&node.Right)
+	//pred.Right = node.Right
 	if !pred.Right.IsNil() {
 		//if pred.Right != nil {
 		np_(pred.Right.Get()).Parent.Set(unsafe.Pointer(pred))
 		//pred.Right.Parent = pred
 	}
 	node.Right.Forward(&tmp.Right)
+	//node.Right = tmp.Right
 	if !node.Right.IsNil() {
 		//if node.Right != nil {
 		np_(pred.Right.Get()).Parent.Set(unsafe.Pointer(node))
@@ -496,19 +502,22 @@ func (tree *OrderedIndex) swapNode(node *OrderedIndexNode, pred *OrderedIndexNod
 
 	} else {
 		pred.Left.Forward(&node.Left)
+		//pred.Left = node.Left
 		if !pred.Left.IsNil() {
 			//if pred.Left != nil {
 			np_(pred.Left.Get()).Parent.Set(unsafe.Pointer(pred))
 			//pred.Left.Parent = pred
 		}
 		node.Left.Forward(&tmp.Left)
+		//node.Left = tmp.Left
 		if !node.Left.IsNil() {
 			//if node.Left != nil {
-			np_(pred.Left.Get()).Parent.Set(unsafe.Pointer(node))
+			np_(node.Left.Get()).Parent.Set(unsafe.Pointer(node))
 			//node.Left.Parent = node
 		}
 
 		pred.Parent.Forward(&node.Parent)
+		//pred.Parent = node.Parent
 		if !pred.Parent.IsNil() {
 			if np_(np_(pred.Parent.Get()).Left.Get()) == node {
 				//if pred.Parent.Left == node {
@@ -524,6 +533,7 @@ func (tree *OrderedIndex) swapNode(node *OrderedIndexNode, pred *OrderedIndexNod
 		}
 
 		node.Parent.Forward(&tmp.Parent)
+		//node.Parent = tmp.Parent
 		if !node.Parent.IsNil() {
 			//if node.Parent != nil {
 			if np_(np_(node.Parent.Get()).Left.Get()) == pred {
@@ -573,7 +583,6 @@ func (tree *OrderedIndex) remove(node *OrderedIndexNode) {
 		}
 	}
 	tree.size--
-	node.free()
 }
 
 func (tree *OrderedIndex) lookup(key Key) *OrderedIndexNode {
@@ -905,11 +914,11 @@ func (tree *OrderedIndex) deleteCase2(node *OrderedIndexNode) {
 func (tree *OrderedIndex) deleteCase3(node *OrderedIndexNode) {
 	sibling := node.sibling()
 	if nodeColor(np_(node.Parent.Get())) == black &&
-	//if nodeColor(node.Parent) == black &&
+		//if nodeColor(node.Parent) == black &&
 		nodeColor(sibling) == black &&
-	//nodeColor(sibling) == black &&
+		//nodeColor(sibling) == black &&
 		nodeColor(np_(sibling.Left.Get())) == black &&
-	//nodeColor(sibling.Left) == black &&
+		//nodeColor(sibling.Left) == black &&
 		nodeColor(np_(sibling.Right.Get())) == black {
 		//nodeColor(sibling.Right) == black {
 		sibling.color = red
@@ -923,10 +932,10 @@ func (tree *OrderedIndex) deleteCase3(node *OrderedIndexNode) {
 func (tree *OrderedIndex) deleteCase4(node *OrderedIndexNode) {
 	sibling := node.sibling()
 	if nodeColor(np_(node.Parent.Get())) == red &&
-	//if nodeColor(node.Parent) == red &&
+		//if nodeColor(node.Parent) == red &&
 		nodeColor(sibling) == black &&
 		nodeColor(np_(sibling.Left.Get())) == black &&
-	//nodeColor(sibling.Left) == black &&
+		//nodeColor(sibling.Left) == black &&
 		nodeColor(np_(sibling.Right.Get())) == black {
 		//nodeColor(sibling.Right) == black {
 		sibling.color = red
@@ -940,10 +949,10 @@ func (tree *OrderedIndex) deleteCase4(node *OrderedIndexNode) {
 func (tree *OrderedIndex) deleteCase5(node *OrderedIndexNode) {
 	sibling := node.sibling()
 	if node == np_(np_(node.Parent.Get()).Left.Get()) &&
-	//if node == node.Parent.Left &&
+		//if node == node.Parent.Left &&
 		nodeColor(sibling) == black &&
 		nodeColor(np_(sibling.Left.Get())) == red &&
-	//nodeColor(sibling.Left) == red &&
+		//nodeColor(sibling.Left) == red &&
 		nodeColor(np_(sibling.Right.Get())) == black {
 		//nodeColor(sibling.Right) == black {
 		sibling.color = red
@@ -951,10 +960,10 @@ func (tree *OrderedIndex) deleteCase5(node *OrderedIndexNode) {
 		//sibling.Left.color = black
 		tree.rotateRight(sibling)
 	} else if node == np_(np_(node.Parent.Get()).Right.Get()) &&
-	//} else if node == node.Parent.Right &&
+		//} else if node == node.Parent.Right &&
 		nodeColor(sibling) == black &&
 		nodeColor(np_(sibling.Right.Get())) == red &&
-	//nodeColor(sibling.Right) == red &&
+		//nodeColor(sibling.Right) == red &&
 		nodeColor(np_(sibling.Left.Get())) == black {
 		//nodeColor(sibling.Left) == black {
 		sibling.color = red

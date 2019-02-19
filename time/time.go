@@ -2,7 +2,6 @@ package common
 
 import (
 	"encoding/json"
-	"github.com/eosspark/eos-go/plugins/appbase/asio"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +16,7 @@ func MinMicroseconds() Microseconds { return Microseconds(0) }
 
 func (ms Microseconds) ToSeconds() int64 { return int64(ms / 1e6) }
 func (ms Microseconds) Count() int64     { return int64(ms) }
+
 //func (ms Microseconds) String() string   { return TimePoint(ms).String() }
 
 func Seconds(s int64) Microseconds      { return Microseconds(s * 1e6) }
@@ -130,21 +130,3 @@ func (tp TimePointSec) SubSec(offset uint32) TimePointSec { return TimePointSec(
 func (tp TimePointSec) AddUs(m Microseconds) TimePoint    { return tp.ToTimePoint().AddUs(m) }
 func (tp TimePointSec) SubUs(m Microseconds) TimePoint    { return tp.ToTimePoint().SubUs(m) }
 func (tp TimePointSec) Sub(t TimePointSec) Microseconds   { return tp.ToTimePoint().Sub(t.ToTimePoint()) }
-
-/**
- * using asio.DeadlineTimer
- */
-type Timer asio.DeadlineTimer
-
-func NewTimer(ctx *asio.IoContext) *Timer {
-	return (*Timer)(asio.NewDeadlineTimer(ctx))
-}
-
-func (t *Timer) ExpiresUntil(time TimePoint)  { t.ExpiresFromNow(time.Sub(Now())) }
-func (t *Timer) ExpiresAt(epoch Microseconds) { t.ExpiresUntil(TimePoint(epoch)) }
-func (t *Timer) ExpiresFromNow(m Microseconds) {
-	(*asio.DeadlineTimer)(t).ExpiresFromNow(time.Microsecond * time.Duration(m))
-}
-
-func (t *Timer) Cancel()                      { (*asio.DeadlineTimer)(t).Cancel() }
-func (t *Timer) AsyncWait(op func(err error)) { (*asio.DeadlineTimer)(t).AsyncWait(op) }

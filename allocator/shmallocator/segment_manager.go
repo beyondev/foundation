@@ -1,6 +1,6 @@
 //+build .
 
-package allocator
+package shmallocator
 
 import (
 	"os"
@@ -17,7 +17,7 @@ func NewSegmentManager(fd int) *SegmentManager {
 }
 
 func (s *SegmentManager) Allocate(size uintptr) unsafe.Pointer {}
-func (s *SegmentManager) DeAllocate(ptr unsafe.Pointer) {}
+func (s *SegmentManager) DeAllocate(ptr unsafe.Pointer)        {}
 
 func (s *SegmentManager) GetPointer() unsafe.Pointer {
 

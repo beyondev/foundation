@@ -1,8 +1,8 @@
-package allocator
+package shmallocator
 
 import (
 	"fmt"
-	"github.com/eosspark/eos-go/common/container/offsetptr"
+	"foundation/offsetptr"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -67,7 +67,7 @@ func close(d []byte) {
 	syscall.Munmap(d)
 }
 
-var alloc *DefaultAllocator
+var alloc *Allocator
 
 type st struct {
 	a uint64
@@ -80,7 +80,7 @@ func (s *st) GetC() *uint32 {
 }
 
 func TestDefaultAllocator_Allocate(t *testing.T) {
-	alloc = NewDefaultAllocator(create, nil)
+	alloc = New(create, nil)
 
 	sta := (*st)(alloc.Allocate(unsafe.Sizeof(st{})))
 	sta.a = 1<<16 - 1
@@ -102,7 +102,7 @@ func TestDefaultAllocator_Allocate(t *testing.T) {
 }
 
 func TestReadMMapData(t *testing.T) {
-	alloc := NewDefaultAllocator(open, nil)
+	alloc := New(open, nil)
 
 	sta := (*st)(unsafe.Pointer(&alloc.availableHeaps[0].heap[_SizeMarker]))
 
@@ -128,8 +128,7 @@ const _SizeOfTtp = unsafe.Sizeof(ttp{})
 func BenchmarkDefaultAllocator_Allocate(b *testing.B) {
 	b.StopTimer()
 
-	alloc := DefaultAllocator{}
-	alloc.Init(create, nil)
+	alloc := New(create, nil)
 
 	b.N = 1024 * 1024 * 1000
 	//defer destroy()

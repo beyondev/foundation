@@ -1,12 +1,11 @@
 package example
 
 import (
-	"github.com/eosspark/eos-go/common/container/allocator"
+	"foundation/allocator/shmallocator"
 	"log"
 	"os"
 	"syscall"
 )
-
 
 type Item struct {
 	id   uint32
@@ -17,7 +16,7 @@ type Item struct {
 const _TestMemorySize = 1024 * 1024 * 1024 * 4
 const _TestMemoryFilePath = "/tmp/data/mmap.bin"
 
-var defaultAlloc = allocator.NewDefaultAllocator(func() []byte {
+var defaultAlloc = shmallocator.New(func() []byte {
 	f, err := os.OpenFile(_TestMemoryFilePath, os.O_RDWR|os.O_CREATE, 0644)
 	//
 	if nil != err {
@@ -41,9 +40,8 @@ var defaultAlloc = allocator.NewDefaultAllocator(func() []byte {
 	return data
 }, nil)
 
-//go:generate go install "github.com/eosspark/eos-go/common/container/allocator/"
-//go:generate go install "github.com/eosspark/eos-go/common/container/offsetptr/"
-//go:generate go install "github.com/eosspark/eos-go/common/container/list/..."
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/list" ExampleList(Item,defaultAlloc)
+//go:generate go install "foundation/allocator/"
+//go:generate go install "foundation/offsetptr/"
+//go:generate go install "foundation/container/list/..."
+//go:generate gotemplate "foundation/container/list" ExampleList(Item,defaultAlloc)
 //go:generate go build .
-

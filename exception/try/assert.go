@@ -1,9 +1,8 @@
 package try
 
 import (
-	//. "github.com/eosspark/eos-go/exceptionx"
-	. "github.com/eosspark/eos-go/exception"
-	. "github.com/eosspark/eos-go/log"
+	. "foundation/exception"
+	. "foundation/log"
 	"os"
 )
 

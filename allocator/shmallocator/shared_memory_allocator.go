@@ -1,10 +1,11 @@
-package allocator
+package shmallocator
 
 import (
+	"foundation/allocator"
 	"unsafe"
 )
 
-type DefaultAllocator struct {
+type Allocator struct {
 	availableHeaps []DefaultMemory
 	actualHeapSize uint32
 	activeHeap     uint32
@@ -13,13 +14,13 @@ type DefaultAllocator struct {
 	grow           func() []byte
 }
 
-func NewDefaultAllocator(initialHeap func() []byte, growHeap func() []byte) *DefaultAllocator {
-	a := &DefaultAllocator{}
+func New(initialHeap func() []byte, growHeap func() []byte) *Allocator {
+	a := &Allocator{}
 	a.Init(initialHeap, growHeap)
 	return a
 }
 
-func (a *DefaultAllocator) Init(initialHeap func() []byte, growHeap func() []byte) {
+func (a *Allocator) Init(initialHeap func() []byte, growHeap func() []byte) {
 	if initialHeap == nil {
 		return
 	}
@@ -31,7 +32,7 @@ func (a *DefaultAllocator) Init(initialHeap func() []byte, growHeap func() []byt
 	a.initialized = true
 }
 
-func (a *DefaultAllocator) Allocate(size uintptr) unsafe.Pointer {
+func (a *Allocator) Allocate(size uintptr) unsafe.Pointer {
 	if size == 0 {
 		return nil
 	}
@@ -39,7 +40,7 @@ func (a *DefaultAllocator) Allocate(size uintptr) unsafe.Pointer {
 	a.adjustToMemBlock(&size)
 
 	var buf *byte
-	var current Memory
+	var current allocator.Memory
 
 	if a.activeHeap < a.actualHeapSize {
 		current = &a.availableHeaps[a.activeHeap]
@@ -74,22 +75,22 @@ func (a *DefaultAllocator) Allocate(size uintptr) unsafe.Pointer {
 	}
 
 	if buf == nil {
-		panic(BadAlloc{"no memory left"})
+		panic(allocator.BadAlloc{"no memory left"})
 	}
 
 	//return unsafe.Pointer(buf)
 	return unsafe.Pointer(uintptr(unsafe.Pointer(buf)))
 }
 
-func (a *DefaultAllocator) DeAllocate(addr unsafe.Pointer) {
-	if addr == nil {
+func (a *Allocator) DeAllocate(p unsafe.Pointer) {
+	if p == nil {
 		return
 	}
 
-	a.availableHeaps[0].Free((*byte)(addr))
+	a.availableHeaps[0].Free((*byte)(p))
 }
 
-func (a *DefaultAllocator) nextActiveHeap() Memory {
+func (a *Allocator) nextActiveHeap() allocator.Memory {
 	if a.grow != nil {
 		heap := a.grow()
 		m := DefaultMemory{heap, uintptr(len(heap)), 0}
@@ -99,7 +100,7 @@ func (a *DefaultAllocator) nextActiveHeap() Memory {
 	return nil
 }
 
-func (a *DefaultAllocator) adjustToMemBlock(size *uintptr) {
+func (a *Allocator) adjustToMemBlock(size *uintptr) {
 	remainder := (*size + _SizeMarker) & _RemMemBlockMask
 	if remainder > 0 {
 		*size += _MemBlock - remainder

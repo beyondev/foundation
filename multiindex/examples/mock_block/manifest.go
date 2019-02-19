@@ -20,18 +20,18 @@ func (m *MockBlock) String() string {
 
 type ValueType = *MockBlock
 
-//go:generate go install "github.com/eosspark/eos-go/common/container/"
-//go:generate go install "github.com/eosspark/eos-go/common/container/multiindex/"
-//go:generate go install "github.com/eosspark/eos-go/common/container/multiindex/multi_index_container/..."
-//go:generate go install "github.com/eosspark/eos-go/common/container/multiindex/hashed_index/..."
-//go:generate go install "github.com/eosspark/eos-go/common/container/multiindex/ordered_index/..."
+//go:generate go install "foundation/container/"
+//go:generate go install "foundation/multiindex/"
+//go:generate go install "foundation/multiindex/multi_index_container/..."
+//go:generate go install "foundation/multiindex/hashed_index/..."
+//go:generate go install "foundation/multiindex/ordered_index/..."
 
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/multiindex/multi_index_container" TestIndex(ById,ByIdNode,ValueType)
+//go:generate gotemplate "foundation/multiindex/multi_index_container" TestIndex(ById,ByIdNode,ValueType)
 
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/multiindex/hashed_index" ById(TestIndex,TestIndexNode,ByPrev,ByPrevNode,ValueType,int,ByIdHashFunc)
+//go:generate gotemplate "foundation/multiindex/hashed_index" ById(TestIndex,TestIndexNode,ByPrev,ByPrevNode,ValueType,int,ByIdHashFunc)
 var ByIdHashFunc = func(n ValueType) int { return n.Id }
 
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/multiindex/ordered_index" ByPrev(TestIndex,TestIndexNode,ByNum,ByNumNode,ValueType,int,ByPrevKeyFunc,ByPrevCompare,true)
+//go:generate gotemplate "foundation/multiindex/ordered_index" ByPrev(TestIndex,TestIndexNode,ByNum,ByNumNode,ValueType,int,ByPrevKeyFunc,ByPrevCompare,true)
 var ByPrevKeyFunc = func(n ValueType) int { return n.Perv }
 var ByPrevCompare = func(av, bv int) int {
 	switch {
@@ -44,7 +44,7 @@ var ByPrevCompare = func(av, bv int) int {
 	}
 }
 
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/multiindex/ordered_index" ByNum(TestIndex,TestIndexNode,ByLibNum,ByLibNumNode,ValueType,ByNumComposite,ByNumKeyFunc,ByNumCompare,true)
+//go:generate gotemplate "foundation/multiindex/ordered_index" ByNum(TestIndex,TestIndexNode,ByLibNum,ByLibNumNode,ValueType,ByNumComposite,ByNumKeyFunc,ByNumCompare,true)
 type ByNumComposite struct {
 	Num       *int
 	InCurrent *bool
@@ -67,7 +67,7 @@ var ByNumCompare = func(aKey, bKey ByNumComposite) int {
 	return 0
 }
 
-//go:generate gotemplate "github.com/eosspark/eos-go/common/container/multiindex/ordered_index" ByLibNum(TestIndex,TestIndexNode,TestIndexBase,TestIndexBaseNode,ValueType,ByLibNumComposite,ByLibNumKeyFunc,ByLibNumCompare,true)
+//go:generate gotemplate "foundation/multiindex/ordered_index" ByLibNum(TestIndex,TestIndexNode,TestIndexBase,TestIndexBaseNode,ValueType,ByLibNumComposite,ByLibNumKeyFunc,ByLibNumCompare,true)
 type ByLibNumComposite struct {
 	Dpos *int
 	Bft  *int

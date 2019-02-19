@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"github.com/eosspark/eos-go/plugins/appbase/asio"
 	"github.com/stretchr/testify/assert"
 	_ "net/http/pprof"
 	"testing"
@@ -26,12 +25,6 @@ func Test_FromIsoString(t *testing.T) {
 	tps, err := FromIsoStringSec(s)
 	assert.NoError(t, err, "error create TimePointSec from string")
 	assert.Equal(t, "2006-01-02T15:05:05", tps.String(), "TimePointSec from string is wrong")
-}
-
-func TestTimer(t *testing.T) {
-	timer := NewTimer((*asio.IoContext)(nil))
-	timer.ExpiresFromNow(Milliseconds(1))
-	timer.AsyncWait(func(err error) {})
 }
 
 func TestTimePoint_MarshalJSON(t *testing.T) {

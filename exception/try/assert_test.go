@@ -5,9 +5,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 
-	//. "github.com/eosspark/eos-go/exceptionx"
-	. "github.com/eosspark/eos-go/exception"
-	. "github.com/eosspark/eos-go/log"
+	. "foundation/exception"
+	. "foundation/log"
 	"testing"
 )
 

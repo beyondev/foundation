@@ -1,10 +1,12 @@
+//+build shared
+
 package multi_index_container
 
 import (
-	"github.com/eosspark/eos-go/common/container"
-	"github.com/eosspark/eos-go/common/container/allocator"
-	"github.com/eosspark/eos-go/common/container/multiindex"
-	. "github.com/eosspark/eos-go/common/container/offsetptr"
+	"foundation/allocator"
+	"foundation/container"
+	"foundation/multiindex"
+	. "foundation/offsetptr"
 	"unsafe"
 )
 
@@ -21,21 +23,23 @@ type MultiIndex struct {
 const _SizeofMultiIndex = unsafe.Sizeof(MultiIndex{})
 
 func New() (m *MultiIndex) {
-	if Allocator == nil {
-		m = &MultiIndex{}
-		m.super.Set(unsafe.Pointer(new(SuperIndex)))
-	} else {
-		m = (*MultiIndex)(Allocator.Allocate(_SizeofMultiIndex))
-		m.super.Set(Allocator.Allocate(_SizeofSuperIndex))
-	}
+	m = (*MultiIndex)(Allocator.Allocate(_SizeofMultiIndex))
+	m.super.Set(Allocator.Allocate(_SizeofSuperIndex))
+	m.count = 0
 
 	(*SuperIndex)(m.super.Get()).init(m)
 	return m
 }
 
+func (m *MultiIndex) Free() {
+	(*SuperIndex)(m.super.Get()).free()
+	Allocator.DeAllocate(unsafe.Pointer(m))
+}
+
 /*generic class*/
 type SuperIndex struct {
 	init    func(*MultiIndex)
+	free    func()
 	clear   func()
 	insert  func(Value, *MultiIndexNode) (*SuperNode, bool)
 	erase   func(*SuperNode)
@@ -52,21 +56,16 @@ type MultiIndexNode struct {
 
 const _SizeofMultiIndexNode = unsafe.Sizeof(MultiIndexNode{})
 
-func NewMultiIndexNode() (n *MultiIndexNode) {
-	if Allocator == nil {
-		n = new(MultiIndexNode)
-	} else {
-		n = (*MultiIndexNode)(Allocator.Allocate(_SizeofMultiIndexNode))
-	}
-	n.super = *NewNil()
-	return
+func NewMultiIndexNode() *MultiIndexNode {
+	n := (*MultiIndexNode)(Allocator.Allocate(_SizeofMultiIndexNode))
+	n.super.Set(nil)
+	return n
 }
 
 func (n *MultiIndexNode) free() {
-	if n != nil && Allocator != nil {
+	if n != nil {
 		Allocator.DeAllocate(unsafe.Pointer(n))
 	}
-	//else free by golang gc
 }
 
 /*generic class*/
@@ -108,6 +107,8 @@ func (m *MultiIndex) insert(v Value) (*MultiIndexNode, bool) {
 		m.count++
 		return fn, true
 	}
+
+	fn.free()
 	return nil, false
 }
 
@@ -116,9 +117,9 @@ func (m *MultiIndex) Erase(iter multiindex.IteratorType) {
 }
 
 func (m *MultiIndex) erase(n *MultiIndexNode) {
+	m.count-- // only sub count when MultiIndexNode erase itself
 	(*SuperIndex)(m.super.Get()).erase((*SuperNode)(n.super.Get()))
-	m.count--
-	n.free()
+	n.free() // free memory finally
 }
 
 func (m *MultiIndex) Modify(iter multiindex.IteratorType, mod func(*Value)) bool {
@@ -136,7 +137,9 @@ func (m *MultiIndex) modify(mod func(*Value), n *MultiIndexNode) (*MultiIndexNod
 	}()
 	mod(n.value())
 	if sn, res := (*SuperIndex)(m.super.Get()).modify((*SuperNode)(n.super.Get())); !res {
+		//delete for failure
 		m.count--
+		n.free()
 		return nil, false
 	} else {
 		n.super.Set(unsafe.Pointer(sn))
@@ -156,36 +159,14 @@ type MultiIndexBase struct {
 	final Pointer `*MultiIndex`
 }
 
-type MultiIndexBaseNode struct {
-	final Pointer `*MultiIndexNode`
-	pv    Pointer `*Value`
-}
-
-const _SizeofMultiIndexBaseNode = unsafe.Sizeof(MultiIndexBaseNode{})
-
-func NewMultiIndexBaseNode(final *MultiIndexNode, pv Value) (mn *MultiIndexBaseNode) {
-	if Allocator == nil {
-		mn = new(MultiIndexBaseNode)
-		mn.pv.Set(unsafe.Pointer(&pv))
-	} else {
-		mn = (*MultiIndexBaseNode)(Allocator.Allocate(_SizeofMultiIndexBaseNode))
-		pvAlloc := Allocator.Allocate(unsafe.Sizeof(pv))
-		mn.pv.Set(pvAlloc)
-		*(*Value)(pvAlloc) = pv
-	}
-	mn.final.Set(unsafe.Pointer(final))
-	return
-}
-
-func (n *MultiIndexBaseNode) Free() {
-	if n != nil && Allocator != nil {
-		Allocator.DeAllocate(n.pv.Get())
-		Allocator.DeAllocate(unsafe.Pointer(n))
-	}
-}
-
 func (i *MultiIndexBase) init(final *MultiIndex) {
 	i.final.Set(unsafe.Pointer(final))
+}
+
+func (i *MultiIndexBase) free() {
+	if i != nil {
+		Allocator.DeAllocate(unsafe.Pointer(i))
+	}
 }
 
 func (i *MultiIndexBase) clear() {}
@@ -199,13 +180,7 @@ func (i *MultiIndexBase) insert(v Value, fn *MultiIndexNode) (*MultiIndexBaseNod
 }
 
 func (i *MultiIndexBase) erase(n *MultiIndexBaseNode) {
-	if !n.pv.IsNil() {
-		if Allocator != nil {
-			Allocator.DeAllocate(n.pv.Get())
-		}
-		n.pv.Set(nil)
-	}
-	n.Free()
+	n.free()
 }
 
 func (i *MultiIndexBase) erase_(iter multiindex.IteratorType) {
@@ -219,6 +194,29 @@ func (i *MultiIndexBase) modify(n *MultiIndexBaseNode) (*MultiIndexBaseNode, boo
 func (i *MultiIndexBase) modify_(iter multiindex.IteratorType, mod func(*Value)) bool {
 	container.Logger.Warn("modify iterator doesn't match all index")
 	return false
+}
+
+type MultiIndexBaseNode struct {
+	final Pointer `*MultiIndexNode`
+	pv    Pointer `*Value`
+}
+
+const _SizeofMultiIndexBaseNode = unsafe.Sizeof(MultiIndexBaseNode{})
+
+func NewMultiIndexBaseNode(final *MultiIndexNode, pv Value) (mn *MultiIndexBaseNode) {
+	mn = (*MultiIndexBaseNode)(Allocator.Allocate(_SizeofMultiIndexBaseNode))
+	pvAlloc := Allocator.Allocate(unsafe.Sizeof(pv))
+	mn.pv.Set(pvAlloc)
+	*(*Value)(pvAlloc) = pv
+	mn.final.Set(unsafe.Pointer(final))
+	return
+}
+
+func (n *MultiIndexBaseNode) free() {
+	if n != nil {
+		Allocator.DeAllocate(n.pv.Get())
+		Allocator.DeAllocate(unsafe.Pointer(n))
+	}
 }
 
 func (n *MultiIndexBaseNode) value() *Value {

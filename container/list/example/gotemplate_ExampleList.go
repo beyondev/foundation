@@ -5,7 +5,7 @@ package example
 import (
 	"unsafe"
 
-	"github.com/eosspark/eos-go/common/container/offsetptr"
+	"foundation/offsetptr"
 )
 
 // template type List(Value,Allocator)

@@ -1,8 +1,10 @@
+//+build !shared
+
 package hashed_index
 
 import (
-	"github.com/eosspark/eos-go/common/container"
-	"github.com/eosspark/eos-go/common/container/multiindex"
+	"foundation/container"
+	"foundation/multiindex"
 )
 
 // template type HashedUniqueIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Hash,KeyFunc)

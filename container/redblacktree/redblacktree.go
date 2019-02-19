@@ -13,7 +13,7 @@ package redblacktree
 
 import (
 	"fmt"
-	"github.com/eosspark/eos-go/common/container"
+	"foundation/container"
 )
 
 type color bool

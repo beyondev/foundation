@@ -3,8 +3,8 @@
 package mock_block
 
 import (
-	"github.com/eosspark/eos-go/common/container"
-	"github.com/eosspark/eos-go/common/container/multiindex"
+	"foundation/container"
+	"foundation/multiindex"
 )
 
 // template type MultiIndex(SuperIndex,SuperNode,Value)

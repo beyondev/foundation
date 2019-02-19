@@ -1,11 +1,11 @@
-//+build .
+//+build !shared
 
 package ordered_index
 
 import (
 	"fmt"
-	"github.com/eosspark/eos-go/common/container"
-	"github.com/eosspark/eos-go/common/container/multiindex"
+	"foundation/container"
+	"foundation/multiindex"
 )
 
 // template type OrderedIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Key,KeyFunc,Comparator,Multiply)
