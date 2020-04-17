@@ -2,12 +2,9 @@ package try
 
 import (
 	"errors"
-	"fmt"
-	//"foundation/exceptionx"
-	"foundation/exception"
-	"foundation/log"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTry_int(t *testing.T) {
@@ -54,22 +51,22 @@ func panicNil() {
 	*a++
 }
 
-func TestTry_RuntimeError(t *testing.T) {
-	Try(func() {
-		a, b := 1, 0
-		println(a / b)
-
-	}).Catch(func(n exception.StdException) {
-		log.Error(n.DetailMessage())
-	}).End()
-
-	Try(func() {
-		panicNil()
-
-	}).Catch(func(n exception.StdException) {
-		log.Error(n.DetailMessage())
-	}).End()
-}
+//func TestTry_RuntimeError(t *testing.T) {
+//	Try(func() {
+//		a, b := 1, 0
+//		println(a / b)
+//
+//	}).Catch(func(n exception.StdException) {
+//		log.Error(n.DetailMessage())
+//	}).End()
+//
+//	Try(func() {
+//		panicNil()
+//
+//	}).Catch(func(n exception.StdException) {
+//		log.Error(n.DetailMessage())
+//	}).End()
+//}
 
 func TestCatch_all(t *testing.T) {
 	Try(func() {
@@ -105,29 +102,29 @@ func TestCatch_all(t *testing.T) {
 
 }
 
-func TestCatch_message(t *testing.T) {
-	Try(func() {
-		a, b := 1, 0
-		c := a / b
-		fmt.Println(c)
-	}).Catch(func(e exception.Exception) {
-		log.Warn(e.DetailMessage())
-	}).End()
-
-	Try(func() {
-		Try(func() {
-			a := &struct {
-				x int
-			}{}
-			a = nil
-			fmt.Println(a.x)
-		}).EosRethrowExceptions(&exception.TransactionTypeException{}, "eos exception re")
-	}).Catch(func(e *exception.TransactionTypeException) {
-		log.Warn(e.DetailMessage())
-	})
-
-	Try(func() {
-		var m map[int]int
-		m[1] = 2
-	}).FcLogAndDrop("log and drop ")
-}
+//func TestCatch_message(t *testing.T) {
+//	Try(func() {
+//		a, b := 1, 0
+//		c := a / b
+//		fmt.Println(c)
+//	}).Catch(func(e exception.Exception) {
+//		log.Warn(e.DetailMessage())
+//	}).End()
+//
+//	Try(func() {
+//		Try(func() {
+//			a := &struct {
+//				x int
+//			}{}
+//			a = nil
+//			fmt.Println(a.x)
+//		}).EosRethrowExceptions(&exception.TransactionTypeException{}, "eos exception re")
+//	}).Catch(func(e *exception.TransactionTypeException) {
+//		log.Warn(e.DetailMessage())
+//	})
+//
+//	Try(func() {
+//		var m map[int]int
+//		m[1] = 2
+//	}).FcLogAndDrop("log and drop ")
+//}

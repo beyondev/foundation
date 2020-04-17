@@ -2,10 +2,12 @@ package offsetptr
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"runtime"
 	"testing"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator/callocator"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPointer_Get(t *testing.T) {
@@ -28,19 +30,10 @@ func TestPointer_Get(t *testing.T) {
 	p2 := NewPointer(unsafe.Pointer(pr))
 	p1.Set(unsafe.Pointer(p2))
 
-	fmt.Println(*(*int)((*Pointer)(p1.Get()).Get()))
-
+	assert.Equal(t, 3, *(*int)((*Pointer)(p1.Get()).Get()))
 }
 
-func Test_Offset(t *testing.T) {
-	a := uintptr(0x100)
-	b := uintptr(0x101)
-	off := a - b
-	c := b + off
-	fmt.Println(off, c)
-}
-
-func Test_OffsetToRaw(t *testing.T) {
+func TestPointer_ToRaw(t *testing.T) {
 	type raw struct {
 		a    int
 		next Pointer
@@ -58,33 +51,11 @@ func Test_OffsetToRaw(t *testing.T) {
 	r2 := (*raw)(off.Get())
 	r1 := (*raw)(r2.next.Get())
 
-	fmt.Println(r1.a)
-	fmt.Println(r2.a)
+	assert.Equal(t, 10, r1.a)
+	assert.Equal(t, 20, r2.a)
 }
 
-func Test_address(t *testing.T) {
-	type N struct {
-		a int
-	}
-
-	//n := N{}
-	//fmt.Printf("%p\n", &n)
-	//fmt.Println(&n.a)
-
-	p1 := Pointer{}
-	p2 := Pointer{}
-
-	//fmt.Printf("%p\n", &p2)
-	p2.Get()
-	p1.Forward(&p2)
-
-	p := new(N)
-	fmt.Println(uintptr(unsafe.Pointer(p)))
-	fmt.Println(uintptr(unsafe.Pointer(&p)))
-	fmt.Println(*(*uintptr)(unsafe.Pointer(p)))
-}
-
-func Test_refrence(t *testing.T) {
+func TestPointer_Forward(t *testing.T) {
 	type sd struct {
 		p Pointer
 	}
@@ -96,65 +67,19 @@ func Test_refrence(t *testing.T) {
 	s := sd{}
 	s.p.Forward(&pp)
 
-	fmt.Println(*(*int)(s.p.Get()))
+	assert.Equal(t, 100, *(*int)(s.p.Get()))
 }
 
-type offT struct {
-	x *int
-	y *yT
-}
+func TestPointer_Set(t *testing.T) {
+	var p **[3][4]int
+	fmt.Println(unsafe.Sizeof(p))
 
-func NewOffT() *offT {
-	t := new(offT)
-	t.x = new(int)
-	t.y = NewYT()
-	*t.x = 1
-	t.y.a = 2
-	runtime.SetFinalizer(t, (*offT).Free)
-	return t
-}
+	alloc := callocator.Instance
+	pint := NewPointer(alloc.Allocate(unsafe.Sizeof(int(0))))
+	//pint := NewPointer(unsafe.Pointer(new(int)))
+	*(*int)(pint.Get()) = 100
 
-func (t *offT) Free() {
-	fmt.Println("offT deleted!")
-}
-
-type yT struct {
-	a int
-}
-
-func NewYT() *yT {
-	y := new(yT)
-	runtime.SetFinalizer(y, (*yT).Free)
-	return y
-}
-
-func (*yT) Free() {
-	fmt.Println("yT freed")
-}
-
-var persist = struct {
-	p    *offT
-	offP Pointer
-}{}
-
-func callGC() {
-	d := NewOffT()
-	persist.p = d
-	//runtime.KeepAlive(&d)
-	//persist.offP.Set(unsafe.Pointer(d))
-	runtime.GC()
-}
-
-func Test_gc(t *testing.T) {
-	callGC()
 	runtime.GC()
 
-	//for n := 0; n < 10000000; n++ {
-	//	_ = NewOffT()
-	//}
-
-	fmt.Println(*persist.p.x)
-	//fmt.Println(*(*offT)(persist.offP.Get()).x)
-	//(*offT)(persist.offP.Get()).free()
-
+	assert.Equal(t, 100, *(*int)(pint.Get()))
 }

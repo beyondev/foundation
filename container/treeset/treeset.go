@@ -12,9 +12,10 @@ package treeset
 import (
 	"encoding/json"
 	"fmt"
-	"foundation/container"
-	rbt "foundation/container/redblacktree"
 	"strings"
+
+	"github.com/Beyond-simplechain/foundation/container"
+	rbt "github.com/Beyond-simplechain/foundation/container/redblacktree"
 )
 
 // template type Set(V,Compare,Multi)

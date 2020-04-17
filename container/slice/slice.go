@@ -3,10 +3,11 @@ package slice
 import (
 	"bytes"
 	"fmt"
-	"foundation/allocator"
-	"foundation/allocator/callocator"
-	"foundation/container"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator"
+	"github.com/Beyond-simplechain/foundation/allocator/callocator"
+	"github.com/Beyond-simplechain/foundation/container"
 )
 
 type V = int

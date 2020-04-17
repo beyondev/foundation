@@ -3,11 +3,12 @@
 package multi_index_container
 
 import (
-	"foundation/allocator"
-	"foundation/container"
-	"foundation/multiindex"
-	. "foundation/offsetptr"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator"
+	"github.com/Beyond-simplechain/foundation/container"
+	"github.com/Beyond-simplechain/foundation/multiindex"
+	. "github.com/Beyond-simplechain/foundation/offsetptr"
 )
 
 // template type MultiIndex(SuperIndex,SuperNode,Value,Allocator)

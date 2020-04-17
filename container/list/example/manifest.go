@@ -1,10 +1,11 @@
 package example
 
 import (
-	"foundation/allocator/shmallocator"
 	"log"
 	"os"
 	"syscall"
+
+	"github.com/Beyond-simplechain/foundation/allocator/shmallocator"
 )
 
 type Item struct {

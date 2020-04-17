@@ -3,11 +3,12 @@
 package hashed_index
 
 import (
-	"foundation/allocator"
-	"foundation/container"
-	"foundation/multiindex"
-	. "foundation/offsetptr"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator"
+	"github.com/Beyond-simplechain/foundation/container"
+	"github.com/Beyond-simplechain/foundation/multiindex"
+	. "github.com/Beyond-simplechain/foundation/offsetptr"
 )
 
 // template type HashedIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Key,KeyFunc,Hasher,Allocator)

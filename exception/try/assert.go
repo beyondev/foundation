@@ -1,9 +1,10 @@
 package try
 
 import (
-	. "foundation/exception"
-	. "foundation/log"
 	"os"
+
+	. "github.com/Beyond-simplechain/foundation/exception"
+	. "github.com/Beyond-simplechain/foundation/log"
 )
 
 func Assert(expr bool, message string) {
@@ -25,21 +26,21 @@ func EosAssert(expr bool, exception Exception, format string, args ...interface{
 	}
 }
 
-func FcAssert(test bool, args ...interface{}) {
-	if !test {
-		format, arg := FcFormatArgParams(args)
-		panic(&AssertException{Elog: []Message{LogMessage(LvlError, "assert:"+format, arg, logMessageSkip)}})
-	}
-}
+//func FcAssert(test bool, args ...interface{}) {
+//	if !test {
+//		format, arg := FcFormatArgParams(args)
+//		panic(&AssertException{Elog: []Message{LogMessage(LvlError, "assert:"+format, arg, logMessageSkip)}})
+//	}
+//}
 
 func EosThrow(exception Exception, format string, args ...interface{}) {
 	exception.AppendLog(LogMessage(LvlError, format, args, logMessageSkip))
 	Throw(exception)
 }
 
-func FcThrow(format string, args ...interface{}) {
-	Throw(&FcException{Elog: []Message{LogMessage(LvlError, format, args, logMessageSkip)}})
-}
+//func FcThrow(format string, args ...interface{}) {
+//	Throw(&FcException{Elog: []Message{LogMessage(LvlError, format, args, logMessageSkip)}})
+//}
 
 func FcRethrowException(er Exception, logLevel Lvl, format string, args ...interface{}) {
 	fcRethrowException(er, logLevel, format, args, fcRethrowExceptionSkip)

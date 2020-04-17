@@ -6,9 +6,10 @@ package redblacktree
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRedBlackTreeMultiPut(t *testing.T) {
@@ -481,11 +482,11 @@ func TestRedBlackMultiTreeMultiRemove(t *testing.T) {
 	tree.Put(4, 42)
 
 	tree.Remove(1)
-	assert.Equal(t, []int{21, 22, 31, 32, 41, 42, 5}, tree.Values())
+	assert.Equal(t, []interface{}{21, 22, 31, 32, 41, 42, 5}, tree.Values())
 	tree.Remove(3)
-	assert.Equal(t, []int{21, 22, 41, 42, 5}, tree.Values())
+	assert.Equal(t, []interface{}{21, 22, 41, 42, 5}, tree.Values())
 	tree.Remove(5)
-	assert.Equal(t, []int{21, 22, 41, 42}, tree.Values())
+	assert.Equal(t, []interface{}{21, 22, 41, 42}, tree.Values())
 }
 
 func TestRedBlackTreeLowerUpperBound(t *testing.T) {
@@ -541,11 +542,6 @@ func TestRedBlackTreeLowerUpperBound(t *testing.T) {
 	fmt.Println(lower.Value())
 	fmt.Println(upper.Value())
 
-	lower = tree.LowerBound(8)
-	upper = tree.UpperBound(8)
-
-	fmt.Println(lower.Value())
-	fmt.Println(upper.Value())
 }
 
 func TestRedBlackMultiTreeIteratorDelete(t *testing.T) {
@@ -557,16 +553,17 @@ func TestRedBlackMultiTreeIteratorDelete(t *testing.T) {
 	tree.Put(2, 22)
 	tree.Put(3, 31)
 	tree.Put(3, 32)
-	tree.Put(5, 5)
 	tree.Put(4, 41)
 	tree.Put(4, 42)
 
-	expects := []int{11, 12, 13, 21, 22, 31, 32, 41, 42, 5}
+	expects := []interface{}{11, 12, 13, 21, 22, 31, 32, 41, 42}
 	index := 1
 
-	for itr := tree.Begin(); itr.HasNext(); itr.Next() {
-		tree.RemoveOne(itr)
-		assert.Equal(t, expects[index:], tree.Values())
+	for itr := tree.Begin(); itr.HasNext(); {
+		itrToDelete := itr
+		itr.Next()
+		tree.RemoveOne(itrToDelete)
+		assert.Equal(t, expects[index:], tree.Values(), "index:%d", index)
 		index++
 	}
 }

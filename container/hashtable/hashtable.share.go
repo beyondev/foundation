@@ -3,11 +3,12 @@ package hashtable
 import (
 	"bytes"
 	"fmt"
-	"foundation/allocator"
-	"foundation/allocator/callocator"
-	"foundation/container"
-	. "foundation/offsetptr"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator"
+	"github.com/Beyond-simplechain/foundation/allocator/callocator"
+	"github.com/Beyond-simplechain/foundation/container"
+	. "github.com/Beyond-simplechain/foundation/offsetptr"
 )
 
 type K = int

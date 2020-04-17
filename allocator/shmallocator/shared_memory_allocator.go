@@ -1,8 +1,9 @@
 package shmallocator
 
 import (
-	"foundation/allocator"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/allocator"
 )
 
 type Allocator struct {
@@ -75,7 +76,7 @@ func (a *Allocator) Allocate(size uintptr) unsafe.Pointer {
 	}
 
 	if buf == nil {
-		panic(allocator.BadAlloc{"no memory left"})
+		panic(allocator.BadAlloc)
 	}
 
 	//return unsafe.Pointer(buf)

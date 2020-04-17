@@ -4,8 +4,8 @@ package ordered_index
 
 import (
 	"fmt"
-	"foundation/container"
-	"foundation/multiindex"
+	"github.com/Beyond-simplechain/foundation/container"
+	"github.com/Beyond-simplechain/foundation/multiindex"
 )
 
 // template type OrderedIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Key,KeyFunc,Comparator,Multiply)

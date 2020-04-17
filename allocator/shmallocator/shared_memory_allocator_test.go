@@ -2,13 +2,14 @@ package shmallocator
 
 import (
 	"fmt"
-	"foundation/offsetptr"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"syscall"
 	"testing"
 	"unsafe"
+
+	"github.com/Beyond-simplechain/foundation/offsetptr"
+	"github.com/stretchr/testify/assert"
 )
 
 const _TestMemorySize = 1024 * 1024 * 1024

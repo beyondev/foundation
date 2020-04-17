@@ -2,9 +2,10 @@ package common
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	_ "net/http/pprof"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_TimePoint(t *testing.T) {

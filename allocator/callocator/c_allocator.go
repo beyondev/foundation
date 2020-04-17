@@ -7,6 +7,7 @@ import "unsafe"
 //#include <string.h>
 import "C"
 
+//allocator memory from cgo, can not freed by GC
 type cAllocator struct{}
 
 var Instance = &cAllocator{}

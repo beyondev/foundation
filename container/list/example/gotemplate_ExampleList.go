@@ -5,7 +5,7 @@ package example
 import (
 	"unsafe"
 
-	"foundation/offsetptr"
+	"github.com/Beyond-simplechain/foundation/offsetptr"
 )
 
 // template type List(Value,Allocator)

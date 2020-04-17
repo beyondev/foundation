@@ -4,6 +4,7 @@ package allocator
 import "C"
 
 import (
+	"errors"
 	"unsafe"
 )
 
@@ -25,10 +26,4 @@ func Memcpy(dest, src unsafe.Pointer, n uintptr) {
 	C.memcpy(dest, src, C.size_t(n))
 }
 
-type BadAlloc struct {
-	Message string
-}
-
-func (b BadAlloc) String() string { return b.Message }
-
-var NoAlloc = MemoryManager(nil)
+var BadAlloc = errors.New("bad alloc")

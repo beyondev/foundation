@@ -4,8 +4,10 @@ import (
 	"unsafe"
 )
 
+//!This Pointer won't recognized by golang compile
+//!Please use other allocators to malloc memory instead of mallocgc
 type Pointer struct {
-	offset uintptr
+	offset uintptr //offset address, 1 means nil, 0 means self
 	//TODO alignment uintptr
 }
 

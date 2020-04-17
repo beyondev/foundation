@@ -3,8 +3,8 @@
 package multi_index_container
 
 import (
-	"foundation/container"
-	"foundation/multiindex"
+	"github.com/Beyond-simplechain/foundation/container"
+	"github.com/Beyond-simplechain/foundation/multiindex"
 )
 
 // template type MultiIndex(SuperIndex,SuperNode,Value)

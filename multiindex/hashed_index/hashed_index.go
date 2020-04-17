@@ -3,8 +3,8 @@
 package hashed_index
 
 import (
-	"foundation/container"
-	"foundation/multiindex"
+	"github.com/Beyond-simplechain/foundation/container"
+	"github.com/Beyond-simplechain/foundation/multiindex"
 )
 
 // template type HashedUniqueIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Hash,KeyFunc)

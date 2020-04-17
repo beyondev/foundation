@@ -5,9 +5,10 @@ package exception
 import (
 	"bytes"
 	"encoding/json"
-	"foundation/log"
 	"reflect"
 	"strconv"
+
+	"github.com/Beyond-simplechain/foundation/log"
 )
 
 // template type Exception(PARENT,CODE,WHAT)
