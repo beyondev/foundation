@@ -147,7 +147,7 @@ func TestResolve(t *testing.T) {
 
 	noerr := false
 	addrs := ""
-	s.AsyncResolve(c, "localhost", 8888, func(address string, err error) {
+	s.AsyncResolve(c, "localhost", "8888", func(address string, err error) {
 		noerr = err == nil
 		addrs += address
 	})
