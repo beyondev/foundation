@@ -1,4 +1,4 @@
-module github.com/Beyond-simplechain/foundation
+module github.com/beyondev/foundation
 
 go 1.13
 
