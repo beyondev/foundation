@@ -1,11 +1,12 @@
-//+build !shared
+//go:build !shared
+// +build !shared
 
 package ordered_index
 
 import (
 	"fmt"
-	"github.com/Beyond-simplechain/foundation/container"
-	"github.com/Beyond-simplechain/foundation/multiindex"
+	"github.com/beyondev/foundation/container"
+	"github.com/beyondev/foundation/multiindex"
 )
 
 // template type OrderedIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Key,KeyFunc,Comparator,Multiply)

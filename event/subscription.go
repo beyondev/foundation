@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Beyond-simplechain/foundation/event/mclock"
+	"github.com/beyondev/foundation/event/mclock"
 )
 
 // Subscription represents a stream of events. The carrier of the events is typically a

@@ -3,8 +3,8 @@ package try
 import (
 	"reflect"
 
-	. "github.com/Beyond-simplechain/foundation/exception"
-	. "github.com/Beyond-simplechain/foundation/log"
+	. "github.com/beyondev/foundation/exception"
+	. "github.com/beyondev/foundation/log"
 )
 
 //Try call the function. And return interface that can call Catch or Finally.

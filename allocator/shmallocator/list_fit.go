@@ -1,11 +1,12 @@
-//+build none
+//go:build none
+// +build none
 
 package shmallocator
 
 import (
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/allocator"
+	"github.com/beyondev/foundation/allocator"
 )
 
 type SimpleSeqFit struct {

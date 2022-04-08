@@ -5,7 +5,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/Beyond-simplechain/foundation/allocator/shmallocator"
+	"github.com/beyondev/foundation/allocator/shmallocator"
 )
 
 type Item struct {

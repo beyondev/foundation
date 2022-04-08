@@ -6,7 +6,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/allocator/callocator"
+	"github.com/beyondev/foundation/allocator/callocator"
 	"github.com/stretchr/testify/assert"
 )
 

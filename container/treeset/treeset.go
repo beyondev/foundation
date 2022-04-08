@@ -14,8 +14,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Beyond-simplechain/foundation/container"
-	rbt "github.com/Beyond-simplechain/foundation/container/redblacktree"
+	"github.com/beyondev/foundation/container"
+	rbt "github.com/beyondev/foundation/container/redblacktree"
 )
 
 // template type Set(V,Compare,Multi)

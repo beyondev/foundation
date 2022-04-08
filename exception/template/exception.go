@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/Beyond-simplechain/foundation/log"
+	"github.com/beyondev/foundation/log"
 )
 
 // template type Exception(PARENT,CODE,WHAT)

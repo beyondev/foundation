@@ -3,8 +3,8 @@ package list
 import (
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/allocator"
-	"github.com/Beyond-simplechain/foundation/offsetptr"
+	"github.com/beyondev/foundation/allocator"
+	"github.com/beyondev/foundation/offsetptr"
 )
 
 // template type List(Value,Allocator)

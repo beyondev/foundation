@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/offsetptr"
+	"github.com/beyondev/foundation/offsetptr"
 	"github.com/stretchr/testify/assert"
 )
 

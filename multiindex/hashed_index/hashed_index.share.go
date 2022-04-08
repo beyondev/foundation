@@ -1,14 +1,15 @@
-//+build shared
+//go:build shared
+// +build shared
 
 package hashed_index
 
 import (
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/allocator"
-	"github.com/Beyond-simplechain/foundation/container"
-	"github.com/Beyond-simplechain/foundation/multiindex"
-	. "github.com/Beyond-simplechain/foundation/offsetptr"
+	"github.com/beyondev/foundation/allocator"
+	"github.com/beyondev/foundation/container"
+	"github.com/beyondev/foundation/multiindex"
+	. "github.com/beyondev/foundation/offsetptr"
 )
 
 // template type HashedIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Key,KeyFunc,Hasher,Allocator)

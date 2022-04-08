@@ -1,10 +1,11 @@
-//+build !shared
+//go:build !shared
+// +build !shared
 
 package hashed_index
 
 import (
-	"github.com/Beyond-simplechain/foundation/container"
-	"github.com/Beyond-simplechain/foundation/multiindex"
+	"github.com/beyondev/foundation/container"
+	"github.com/beyondev/foundation/multiindex"
 )
 
 // template type HashedUniqueIndex(FinalIndex,FinalNode,SuperIndex,SuperNode,Value,Hash,KeyFunc)

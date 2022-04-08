@@ -1,6 +1,6 @@
 package container
 
-import "github.com/Beyond-simplechain/foundation/log"
+import "github.com/beyondev/foundation/log"
 
 type Container interface {
 	Empty() bool

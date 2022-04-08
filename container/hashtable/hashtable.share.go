@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/Beyond-simplechain/foundation/allocator"
-	"github.com/Beyond-simplechain/foundation/allocator/callocator"
-	"github.com/Beyond-simplechain/foundation/container"
-	. "github.com/Beyond-simplechain/foundation/offsetptr"
+	"github.com/beyondev/foundation/allocator"
+	"github.com/beyondev/foundation/allocator/callocator"
+	"github.com/beyondev/foundation/container"
+	. "github.com/beyondev/foundation/offsetptr"
 )
 
 type K = int

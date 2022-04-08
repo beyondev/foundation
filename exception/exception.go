@@ -1,6 +1,6 @@
 package exception
 
-import "github.com/Beyond-simplechain/foundation/log"
+import "github.com/beyondev/foundation/log"
 
 type ExcTypes = int64
 

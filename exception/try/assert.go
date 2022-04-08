@@ -3,8 +3,8 @@ package try
 import (
 	"os"
 
-	. "github.com/Beyond-simplechain/foundation/exception"
-	. "github.com/Beyond-simplechain/foundation/log"
+	. "github.com/beyondev/foundation/exception"
+	. "github.com/beyondev/foundation/log"
 )
 
 func Assert(expr bool, message string) {
